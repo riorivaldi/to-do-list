@@ -12,22 +12,22 @@
 <body class="flex flex-col justify-center items-center p-12 bg-[#E7E8EA] relative overflow-hidden">
 
     <img src="{{ asset('img/goat.jpg') }}" alt="logo" width="100" height="100" class="w-[90px] h-[90px] rounded-full">
-    <h1 class="font-bold text-[20px] mt-2">To Do List</h1>
+    <h1 class="font-bold text-[20px] mt-2">To Do List 2025</h1>
 
 
     {{-- Form tambah todo --}}
     <form action="/store" method="POST" class="flex flex-col gap-3 w-full max-w-md mb-4 mt-3">
         @csrf
-        <input type="text" name="title" class="h-12 w-full py-2 px-4 border border-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-black bg-white shadow-md" placeholder="
-agrega tu nombre" required>
+        <input type="text" name="title" class="h-12 w-full py-2 px-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-black bg-white shadow-md" placeholder="
+add your name" required>
 
-        <input type="datetime-local" name="datetime" class="h-12 w-full py-2 px-4 border border-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-black bg-white shadow-md" required>
+        <input type="datetime-local" name="datetime" class="h-12 w-full py-2 px-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-black bg-white shadow-md" required>
 
-        <button type="submit" class="h-12 px-5 rounded-full shadow-md focus:ring-1 focus:ring-black font-semibold bg-gray-500 text-white hover:bg-gray-900 transition">
-agrega tu nombre</button>
+        <button type="submit" class="h-12 px-5 rounded-xl shadow-md focus:ring-1 focus:ring-black font-semibold bg-gray-500 text-white hover:bg-gray-900 transition">
+add your name</button>
     </form>
 
-    <div class="bg-gradient-to-r bg-[#C1C9DD] flex justify-center items-center min-w-[500px] rounded-xl shadow-lg overflow-y-auto pt-4 max-h-[300px]">
+    <div class="bg-gradient-to-r bg-gray-800 flex justify-center items-center min-w-[500px] rounded-xl shadow-lg overflow-y-auto pt-4 max-h-[300px]">
         {{-- Daftar Todo --}}
         <ul class="w-full max-w-md">
             @foreach($todos as $todo)
@@ -108,7 +108,7 @@ agrega tu nombre</button>
 
             {{-- Tombol Submit --}}
             <button type="submit"
-                class="w-full mt-4 h-12 bg-green-500 text-white font-semibold rounded hover:bg-green-600 transition">
+                class="w-full mt-4 h-12 bg-gray-500 text-white font-semibold rounded hover:bg-gray-800 transition">
                 UPDATE
             </button>
         </form>
