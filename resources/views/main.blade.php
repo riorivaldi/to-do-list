@@ -7,54 +7,66 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
     @vite('resources/css/app.css')
-    <title>To-Do-List</title>
+    <title>To-Do List</title>
 </head>
-<body class="flex flex-col justify-center items-center p-12 bg-[#E7E8EA] relative overflow-hidden">
+<body class="flex flex-col justify-center items-center p-12 bg-[#E7E8EA] relative ">
 
     <img src="{{ asset('img/goat.jpg') }}" alt="logo" width="100" height="100" class="w-[90px] h-[90px] rounded-full">
-    <h1 class="font-bold text-[20px] mt-2">To Do List 2025</h1>
-
+    <h1 class="font-bold text-[20px] mt-2">To Do List</h1>
 
     {{-- Form tambah todo --}}
     <form action="/store" method="POST" class="flex flex-col gap-3 w-full max-w-md mb-4 mt-3">
         @csrf
-        <input type="text" name="title" class="h-12 w-full py-2 px-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-black bg-white shadow-md" placeholder="
-add your name" required>
 
-        <input type="datetime-local" name="datetime" class="h-12 w-full py-2 px-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-black bg-white shadow-md" required>
 
-        <button type="submit" class="h-12 px-5 rounded-xl shadow-md focus:ring-1 focus:ring-black font-semibold bg-gray-500 text-white hover:bg-gray-900 transition">
-add your name</button>
+        <input type="text" name="title" class="h-12 w-full py-2 px-4 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-black bg-white shadow-md" placeholder="Add your task here" required>
+
+        <input type="datetime-local" name="datetime" class="h-12 w-full py-2 px-4 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-black bg-white shadow-md" required>
+
+        <!-- Priority -->
+        <select name="priority" class="h-12 w-full py-2 px-4 border border-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-black bg-white shadow-md">
+            <option value="low">Low Priority</option>
+            <option value="medium" selected>Medium Priority</option>
+            <option value="high">High Priority</option>
+        </select>
+
+        <!-- Checkbox Pinned -->
+        <label class="flex items-center space-x-2">
+            <input type="checkbox" name="pinned" value="1" class="h-5 w-5 text-blue-600">
+            <span>Sisipkan (Pinned)</span>
+        </label>
+
+        <button type="submit" class="h-12 bg-blue-500 text-white font-semibold rounded-full hover:bg-blue-600 transition">ADD</button>
     </form>
 
-    <div class="bg-gradient-to-r bg-gray-800 flex justify-center items-center min-w-[500px] rounded-xl shadow-lg overflow-y-auto pt-4 max-h-[300px]">
+    <div class="bg-[#C1C9DD] flex justify-center items-center min-w-[500px] rounded-xl shadow-lg overflow-y-auto pt-4 max-h-[300px]">
         {{-- Daftar Todo --}}
         <ul class="w-full max-w-md">
             @foreach($todos as $todo)
                 <li class="flex justify-between items-center p-4 mb-4 pt-1 rounded-xl shadow-md bg-white">
-                    <div class="flex items-center gap-x-3 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200">
-                        <form action="/toggle-complete/{{ $todo->id }}" method="POST">
-                            @csrf
-                            @method('PATCH')
-                            <label class="relative cursor-pointer">
-                                <input type="checkbox" onchange="this.form.submit()" {{ $todo->completed ? 'checked' : '' }}
-                                    class="peer hidden">
-                                <div class="w-6 h-6 flex items-center justify-center border-2 border-gray-400 rounded-md bg-white peer-checked:bg-blue-700 peer-checked:border-blue-700 transition-all duration-300">
-                                    <svg class="w-4 h-4 text-white hidden peer-checked:block" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </div>
-                            </label>
-                        </form>
+                     {{-- Checkbox Completed --}}
+                     <form action="/complete/{{ $todo->id }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <input type="checkbox" onchange="this.form.submit()" {{ $todo->completed ? 'checked' : '' }} class="h-5 w-5 text-green-600">
+                    </form>
 
-                        <div class="text-lg font-medium transition-all duration-300">
+                    <div class="flex items-center gap-x-3 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 w-full">
+                        <span class="inline-block px-2 py-1 text-white text-xs rounded-full
+                            {{ $todo->priority === 'low' ? 'bg-green-500' :
+                               ($todo->priority === 'medium' ? 'bg-yellow-500' : 'bg-red-500') }}">
+                            {{ ucfirst($todo->priority) }}
+                        </span>
+
+                        <div class="text-sm font-medium transition-all duration-300 flex-1">
                             <div class="flex justify-between items-center">
-                                <span class="{{ $todo->completed ? 'line-through text-gray-400' : 'text-gray-800' }} w-full flex justify-between items-center">
-                                    <span>{{ $todo->title }}</span>
-                                    <span class="text-sm text-gray-500 ml-4">
-                                        {{ \Carbon\Carbon::parse($todo->datetime)->format('d M Y, H:i') }}
-                                    </span>
+                                <span class="{{ $todo->completed ? 'line-through text-gray-400' : 'text-gray-800' }}">
+                                    {{ $todo->title }}
                                 </span>
+                                <span class="{{ $todo->completed ? 'line-through text-sm text-gray-400' : 'text-gray-800' }}">
+                                    {{ \Carbon\Carbon::parse($todo->datetime)->format('d M Y, H:i') }}
+                                </span>
+
                             </div>
                         </div>
 
@@ -62,12 +74,13 @@ add your name</button>
                     </div>
 
                     <div class="flex items-center gap-x-2">
-                        {{-- Tombol Edit (Buka Modal) --}}
+
+                        {{-- Tombol Edit --}}
                         <button onclick="openEditModal('{{ $todo->id }}', '{{ $todo->title }}', '{{ $todo->datetime }}')">
                             <i class="ri-edit-line text-blue-500 hover:text-blue-700 cursor-pointer"></i>
                         </button>
 
-                        {{-- Tombol Hapus --}}
+                        {{-- Tombol Delete --}}
                         <form id="deleteForm-{{ $todo->id }}" action="/delete/{{ $todo->id }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
@@ -81,9 +94,6 @@ add your name</button>
         </ul>
     </div>
 
-
-
-
     {{-- MODAL EDIT TODO --}}
     <div id="modalOverlay" class="hidden fixed inset-0 backdrop-blur-md bg-black/10 z-40"></div>
 
@@ -92,34 +102,27 @@ add your name</button>
         <form id="editForm" method="POST">
             @csrf
             @method('PATCH')
-
-            {{-- Hidden ID, opsional jika diperlukan --}}
             <input type="hidden" id="editId" name="id">
 
-            {{-- Title --}}
             <input type="text" id="editTitle" name="title"
                 class="h-12 w-full py-2 px-4 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-black bg-white shadow-md"
                 required>
 
-            {{-- Datetime --}}
             <input type="datetime-local" id="editDatetime" name="datetime"
                 class="h-12 w-full py-2 px-4 mt-4 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-black bg-white shadow-md"
                 required>
 
-            {{-- Tombol Submit --}}
             <button type="submit"
-                class="w-full mt-4 h-12 bg-gray-500 text-white font-semibold rounded hover:bg-gray-800 transition">
+                class="w-full mt-4 h-12 bg-green-500 text-white font-semibold rounded hover:bg-green-600 transition">
                 UPDATE
             </button>
         </form>
 
-        {{-- Tombol Close --}}
         <button onclick="closeEditModal()"
             class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
             <i class="ri-close-line text-2xl"></i>
         </button>
     </div>
-
 
     <script>
         function openEditModal(id, title, datetime) {
@@ -127,34 +130,30 @@ add your name</button>
             document.getElementById('modalOverlay').classList.remove('hidden');
             document.getElementById('editTitle').value = title;
             document.getElementById('editForm').action = "/edit/" + id;
-            document.getElementById('edit-datetime').value = datetime;
+            document.getElementById('editDatetime').value = datetime;
         }
 
         function closeEditModal() {
             document.getElementById('editModal').classList.add('hidden');
             document.getElementById('modalOverlay').classList.add('hidden');
         }
+
+        function confirmDelete(todoId) {
+            Swal.fire({
+                title: "Apakah Anda yakin?",
+                text: "Data yang dihapus tidak bisa dikembalikan!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ya, Hapus!",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm-' + todoId).submit();
+                }
+            });
+        }
     </script>
-
-<script>
-    function confirmDelete(todoId) {
-        Swal.fire({
-            title: "Apakah Anda yakin?",
-            text: "Data yang dihapus tidak bisa dikembalikan!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Ya, Hapus!",
-            cancelButtonText: "Batal"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('deleteForm-' + todoId).submit();
-            }
-        });
-    }
-</script>
-
-
 </body>
 </html>

@@ -7,68 +7,50 @@ use Illuminate\Http\Request;
 
 class TodoController extends Controller
 {
-    // Menampilkan daftar todo
     public function index()
     {
-        $todos = Todo::orderBy('created_at', 'desc')->get();
+        // Retrieve all todos
+        $todos = Todo::all();
+
+        // Return the view with todos
         return view('main', compact('todos'));
     }
 
-    // Menyimpan tugas baru ke database
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'datetime' => 'required|date',
-        ]);
-
         Todo::create([
-            'title' => $validated['title'],
-            'datetime' => $validated['datetime'],
-            'completed' => false,
+            'title' => $request->title,
+            'datetime' => $request->datetime,
+            'priority' => $request->priority,
+            'pinned' => $request->pinned ? true : false,
         ]);
 
-        return redirect()->back()->with('success', 'Tugas berhasil ditambahkan!');
+        return redirect()->back();
     }
 
-    // Menampilkan form edit (kalau butuh halaman terpisah)
-    public function edit(Todo $todo)
-    {
-        return view('edit', compact('todo'));
-    }
-
-    // Memperbarui tugas di database
-    public function update(Request $request, Todo $todo)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'datetime' => 'required|date',
-        ]);
-
-        $todo->update([
-            'title' => $validated['title'],
-            'datetime' => $validated['datetime'],
-        ]);
-
-        return redirect('/')->with('success', 'Tugas berhasil diperbarui!');
-    }
-
-    // Menghapus tugas dari database
-    public function destroy(Todo $todo)
-    {
-        $todo->delete();
-        return redirect()->back()->with('success', 'Tugas berhasil dihapus!');
-    }
-
-    // Menandai tugas sebagai selesai/tidak selesai
     public function toggleComplete($id)
     {
         $todo = Todo::findOrFail($id);
+        $todo->completed = !$todo->completed;
+        $todo->save();
 
+        return back();
+    }
+
+    public function destroy($id)
+    {
+        Todo::destroy($id);
+        return back();
+    }
+
+    public function update(Request $request, $id)
+    {
+        $todo = Todo::findOrFail($id);
         $todo->update([
-            'completed' => !$todo->completed,
+            'title' => $request->title,
+            'datetime' => $request->datetime,
         ]);
 
-        return redirect()->back()->with('success', 'Status tugas diperbarui!');
+        return redirect()->back();
     }
 }

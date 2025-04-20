@@ -5,18 +5,25 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
+    /**
+     * Jalankan migrasi.
+     */
     public function up(): void
     {
         Schema::create('todos', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->datetime('datetime');
-            $table->boolean('completed')->default(false);
-            $table->enum('property', ['low', 'medium', 'high'])->default('low');
-            $table->timestamps(); // created_at dan updated_at
+            $table->boolean('completed')->default(false); // Pastikan boolean
+            $table->timestamps();
+            $table->boolean('pinned')->default(false); // untuk sematkan
+            $table->enum('priority', ['low', 'medium', 'high'])->default('medium'); // untuk level
         });
+
     }
 
+    /**
+     * Kembalikan perubahan migrasi.
+     */
     public function down(): void
     {
         Schema::dropIfExists('todos');
